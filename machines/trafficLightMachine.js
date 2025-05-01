@@ -1,33 +1,15 @@
-import { createMachine } from 'xstate';
-
-// Traffic light state machine
-export const trafficLightMachine = createMachine({
-  id: 'trafficLight',
+// Simple traffic light state machine without any complex operations
+export const trafficLightMachine = {
   initial: 'green',
   states: {
     green: {
-      on: {
-        TIMER: 'yellow'
-      },
-      after: {
-        3000: 'yellow'
-      }
+      next: 'yellow'
     },
     yellow: {
-      on: {
-        TIMER: 'red'
-      },
-      after: {
-        1000: 'red'
-      }
+      next: 'red'
     },
     red: {
-      on: {
-        TIMER: 'green'
-      },
-      after: {
-        4000: 'green'
-      }
+      next: 'green'
     }
   }
-});
+};

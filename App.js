@@ -12,9 +12,6 @@ import {
 // Import components
 import TrafficLight from './components/TrafficLight';
 import ToggleSwitch from './components/ToggleSwitch';
-import FetchExample from './components/FetchExample';
-import FormValidation from './components/FormValidation';
-import WizardForm from './components/WizardForm';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('traffic');
@@ -25,12 +22,6 @@ export default function App() {
         return <TrafficLight />;
       case 'toggle':
         return <ToggleSwitch />;
-      case 'fetch':
-        return <FetchExample />;
-      case 'form':
-        return <FormValidation />;
-      case 'wizard':
-        return <WizardForm />;
       default:
         return <TrafficLight />;
     }
@@ -41,15 +32,11 @@ export default function App() {
       <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
       
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>XState</Text>
+        <Text style={styles.headerTitle}>XState Demo</Text>
         <Text style={styles.headerSubtitle}>State Machines for React</Text>
       </View>
       
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false} 
-        style={styles.tabsContainer}
-      >
+      <View style={styles.tabsContainer}>
         <TouchableOpacity 
           style={[styles.tab, activeTab === 'traffic' && styles.activeTab]} 
           onPress={() => setActiveTab('traffic')}
@@ -67,34 +54,7 @@ export default function App() {
             Toggle
           </Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.tab, activeTab === 'fetch' && styles.activeTab]} 
-          onPress={() => setActiveTab('fetch')}
-        >
-          <Text style={[styles.tabText, activeTab === 'fetch' && styles.activeTabText]}>
-            Fetch
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.tab, activeTab === 'form' && styles.activeTab]} 
-          onPress={() => setActiveTab('form')}
-        >
-          <Text style={[styles.tabText, activeTab === 'form' && styles.activeTabText]}>
-            Form
-          </Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.tab, activeTab === 'wizard' && styles.activeTab]} 
-          onPress={() => setActiveTab('wizard')}
-        >
-          <Text style={[styles.tabText, activeTab === 'wizard' && styles.activeTabText]}>
-            Wizard
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
+      </View>
       
       <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
         {renderContent()}
@@ -110,7 +70,6 @@ export default function App() {
             <Text style={styles.featureItem}>• Visualizable state transitions and logic</Text>
             <Text style={styles.featureItem}>• Handles complex UI flows and business logic</Text>
             <Text style={styles.featureItem}>• Prevents impossible states and race conditions</Text>
-            <Text style={styles.featureItem}>• Declarative approach to state management</Text>
           </View>
         </View>
         
@@ -147,14 +106,15 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.8)',
   },
   tabsContainer: {
+    flexDirection: 'row',
     backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
   tab: {
+    flex: 1,
     paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginHorizontal: 4,
+    alignItems: 'center',
   },
   activeTab: {
     borderBottomWidth: 2,

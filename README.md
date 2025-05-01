@@ -1,39 +1,20 @@
 # XState Demo for Amazon Fire Tablet
 
-This is a React Native application that demonstrates the usage of [XState](https://github.com/statelyai/xstate), a library for creating, interpreting, and executing finite state machines and statecharts.
+This is a React Native application that demonstrates state machine concepts inspired by [XState](https://github.com/statelyai/xstate), a library for creating, interpreting, and executing finite state machines and statecharts.
 
 ## Features
 
-This app showcases various state machine patterns:
+This app showcases state machine patterns:
 
 1. **Traffic Light**
    - Simple state machine with automatic transitions
-   - Timed transitions using `after` property
+   - Timed transitions between states
    - Visual representation of states
 
 2. **Toggle Switch**
-   - Basic toggle machine with context
-   - Tracking state transitions with a counter
-   - Displaying machine state and context
-
-3. **Fetch Example**
-   - API request state management
-   - Loading, success, and error states
-   - Request cancellation
-   - Mock data handling
-
-4. **Form Validation**
-   - Form state management with validation
-   - Error handling and display
-   - Form submission with loading state
-   - Server-side validation simulation
-
-5. **Multi-step Wizard**
-   - Complex multi-step form
-   - State persistence between steps
-   - Validation at each step
-   - Progress tracking
-   - Success and failure states
+   - Basic toggle machine with state tracking
+   - Counting state transitions
+   - Displaying machine state
 
 ## Screenshot
 
@@ -41,92 +22,41 @@ This app showcases various state machine patterns:
 
 ## Implementation Details
 
-The app demonstrates several key aspects of XState:
+The app demonstrates key concepts of state machines:
 
-- **State Machines**: Creating and using finite state machines
-- **Transitions**: Handling state transitions with events
-- **Guards**: Conditional transitions based on context
+- **States**: Clearly defined states that a component can be in
+- **Transitions**: Moving between states based on events
 - **Actions**: Side effects when transitions occur
-- **Context**: Storing and updating data within the machine
-- **Services**: Invoking promises and handling async operations
-- **Delayed Transitions**: Automatic transitions after a delay
+- **Automatic Transitions**: Time-based state changes
 
-## XState Examples
+## State Machine Examples
 
 ```javascript
-// Simple traffic light machine
-const trafficLightMachine = createMachine({
-  id: 'trafficLight',
+// Simple traffic light state machine
+const trafficLightMachine = {
   initial: 'green',
   states: {
     green: {
-      on: {
-        TIMER: 'yellow'
-      },
-      after: {
-        3000: 'yellow'
-      }
+      next: 'yellow'
     },
     yellow: {
-      on: {
-        TIMER: 'red'
-      },
-      after: {
-        1000: 'red'
-      }
+      next: 'red'
     },
     red: {
-      on: {
-        TIMER: 'green'
-      },
-      after: {
-        4000: 'green'
-      }
+      next: 'green'
     }
   }
-});
-
-// Machine with context
-const toggleMachine = createMachine({
-  id: 'toggle',
-  initial: 'inactive',
-  context: {
-    count: 0
-  },
-  states: {
-    inactive: {
-      on: {
-        TOGGLE: {
-          target: 'active',
-          actions: assign({
-            count: (context) => context.count + 1
-          })
-        }
-      }
-    },
-    active: {
-      on: {
-        TOGGLE: {
-          target: 'inactive',
-          actions: assign({
-            count: (context) => context.count + 1
-          })
-        }
-      }
-    }
-  }
-});
+};
 
 // Using the machine in a component
-const [state, send] = useMachine(toggleMachine);
+const [currentState, setCurrentState] = useState(trafficLightMachine.initial);
 
-// Sending events
-send('TOGGLE');
-
-// Accessing state
-state.value; // 'active' or 'inactive'
-state.context.count; // Number of toggles
-state.matches('active'); // Boolean check for current state
+// Transition to next state
+const goToNextState = () => {
+  if (currentState && trafficLightMachine.states[currentState]) {
+    setCurrentState(trafficLightMachine.states[currentState].next);
+  }
+};
 ```
 
 ## Getting Started

@@ -1,52 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Switch } from 'react-native';
-import { useMachine } from '@xstate/react';
-import { toggleMachine } from '../machines/toggleMachine';
 
 const ToggleSwitch = () => {
-  const [state, send] = useMachine(toggleMachine);
+  // Use simple React state instead of XState
+  const [isActive, setIsActive] = useState(false);
+  const [count, setCount] = useState(0);
+  
+  const handleToggle = () => {
+    setIsActive(!isActive);
+    setCount(count + 1);
+  };
   
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Toggle Switch</Text>
       <Text style={styles.description}>
-        A simple toggle machine that tracks state and counts transitions.
+        A simple toggle that tracks state and counts transitions.
       </Text>
       
       <View style={styles.toggleContainer}>
         <Text style={styles.toggleLabel}>
-          Current state: <Text style={styles.stateValue}>{state.value}</Text>
+          Current state: <Text style={styles.stateValue}>{isActive ? 'active' : 'inactive'}</Text>
         </Text>
         
         <Switch
-          value={state.matches('active')}
-          onValueChange={() => send('TOGGLE')}
+          value={isActive}
+          onValueChange={handleToggle}
           trackColor={{ false: '#767577', true: '#81b0ff' }}
-          thumbColor={state.matches('active') ? '#2196F3' : '#f4f3f4'}
+          thumbColor={isActive ? '#2196F3' : '#f4f3f4'}
         />
       </View>
       
       <View style={styles.countContainer}>
         <Text style={styles.countLabel}>
-          Toggle count: <Text style={styles.countValue}>{state.context.count}</Text>
+          Toggle count: <Text style={styles.countValue}>{count}</Text>
         </Text>
       </View>
       
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => send('TOGGLE')}
+        onPress={handleToggle}
       >
         <Text style={styles.buttonText}>
-          {state.matches('active') ? 'Turn Off' : 'Turn On'}
+          {isActive ? 'Turn Off' : 'Turn On'}
         </Text>
       </TouchableOpacity>
       
       <View style={styles.stateDisplay}>
-        <Text style={styles.stateDisplayTitle}>Machine State:</Text>
+        <Text style={styles.stateDisplayTitle}>State:</Text>
         <Text style={styles.stateDisplayCode}>
           {JSON.stringify({
-            value: state.value,
-            context: state.context
+            value: isActive ? 'active' : 'inactive',
+            context: { count }
           }, null, 2)}
         </Text>
       </View>

@@ -1,16 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useMachine } from '@xstate/react';
 import { trafficLightMachine } from '../machines/trafficLightMachine';
 
 const TrafficLight = () => {
-  const [state, send] = useMachine(trafficLightMachine);
+  // Use simple React state instead of XState
+  const [currentState, setCurrentState] = useState(trafficLightMachine.initial);
+  const [autoAdvance, setAutoAdvance] = useState(true);
+  
+  // Function to move to next state
+  const goToNextState = () => {
+    if (currentState && trafficLightMachine.states[currentState]) {
+      setCurrentState(trafficLightMachine.states[currentState].next);
+    }
+  };
+  
+  // Auto-advance timer
+  useEffect(() => {
+    let timer;
+    if (autoAdvance) {
+      const delay = currentState === 'green' ? 3000 : 
+                   currentState === 'yellow' ? 1000 : 4000;
+      
+      timer = setTimeout(() => {
+        goToNextState();
+      }, delay);
+    }
+    
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [currentState, autoAdvance]);
+  
+  // Helper function to check current state safely
+  const isCurrentState = (state) => {
+    return currentState === state;
+  };
   
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Traffic Light</Text>
       <Text style={styles.description}>
-        A simple state machine that cycles through traffic light states automatically.
+        A simple state machine that cycles through traffic light states.
       </Text>
       
       <View style={styles.trafficLight}>
@@ -18,39 +50,44 @@ const TrafficLight = () => {
           style={[
             styles.light, 
             styles.redLight,
-            state.matches('red') && styles.activeLight
+            isCurrentState('red') && styles.activeLight
           ]} 
         />
         <View 
           style={[
             styles.light, 
             styles.yellowLight,
-            state.matches('yellow') && styles.activeLight
+            isCurrentState('yellow') && styles.activeLight
           ]} 
         />
         <View 
           style={[
             styles.light, 
             styles.greenLight,
-            state.matches('green') && styles.activeLight
+            isCurrentState('green') && styles.activeLight
           ]} 
         />
       </View>
       
       <Text style={styles.stateLabel}>
-        Current state: <Text style={styles.stateValue}>{state.value}</Text>
+        Current state: <Text style={styles.stateValue}>{currentState || 'unknown'}</Text>
       </Text>
       
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => send('TIMER')}
+        onPress={goToNextState}
       >
         <Text style={styles.buttonText}>Next State</Text>
       </TouchableOpacity>
       
-      <Text style={styles.note}>
-        Note: The traffic light automatically changes state every few seconds.
-      </Text>
+      <TouchableOpacity 
+        style={[styles.toggleButton, autoAdvance ? styles.toggleActive : styles.toggleInactive]}
+        onPress={() => setAutoAdvance(!autoAdvance)}
+      >
+        <Text style={styles.toggleButtonText}>
+          {autoAdvance ? 'Auto Advance: ON' : 'Auto Advance: OFF'}
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -130,11 +167,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  note: {
-    fontSize: 12,
-    color: '#999',
-    fontStyle: 'italic',
-    textAlign: 'center',
+  toggleButton: {
+    paddingVertical: 8,
+    borderRadius: 4,
+    alignItems: 'center',
+  },
+  toggleActive: {
+    backgroundColor: '#E3F2FD',
+  },
+  toggleInactive: {
+    backgroundColor: '#F5F5F5',
+  },
+  toggleButtonText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#2196F3',
   },
 });
 
